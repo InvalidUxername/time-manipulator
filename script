@@ -14,7 +14,7 @@ textButton.Parent = screenGui
 
 -- Create a Sound object
 local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://5129686200"  -- Replace with the actual sound ID
+sound.SoundId = "rbxassetid://12345678"  -- Replace with the actual sound ID
 sound.Parent = game.Workspace
 
 -- Function to create and expand the sphere
@@ -35,7 +35,7 @@ local function createAndExpandSphere(player)
 
     -- Tween information
     local tweenInfo = TweenInfo.new(
-        10,  -- Time in seconds
+        5,  -- Time in seconds for faster expansion
         Enum.EasingStyle.Linear,
         Enum.EasingDirection.InOut
     )
