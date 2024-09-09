@@ -13,7 +13,7 @@ textButton.Parent = screenGui
 
 -- Create a Sound object
 local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://12345678"  -- Replace with the actual sound ID
+sound.SoundId = "rbxassetid://5129686200"  -- Replace with the actual sound ID
 sound.Parent = game.Workspace
 
 -- Play sound and release sphere when button is clicked
@@ -29,9 +29,11 @@ textButton.MouseButton1Click:Connect(function()
 
     -- Create the sphere
     local sphere = Instance.new("Part")
+    sphere.Name = "ExpandingSphere"  -- Name it for easier identification
     sphere.Shape = Enum.PartType.Ball
     sphere.Size = Vector3.new(5, 5, 5)  -- Initial size of the sphere
     sphere.Position = humanoidRootPart.Position
+    sphere.Anchored = true  -- Make sure it's anchored so it doesn't fall
     sphere.Material = Enum.Material.Forcefield
     sphere.Color = Color3.fromRGB(0, 0, 0)  -- Black color
     sphere.Parent = workspace
