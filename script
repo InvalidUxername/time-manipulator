@@ -46,7 +46,7 @@ textButton.MouseButton1Click:Connect(function()
     while tick() - startTime < 10 do
         sphere.Size = sphere.Size + Vector3.new(1, 1, 1)  -- Expand sphere
         sphere.CFrame = rootPart.CFrame  -- Keep sphere at player's position
-        wait(0.1)  -- Adjust the wait for smoother expansion
+        wait(1)  -- Adjust the wait for smoother expansion
     end
 
     -- Delete the sphere after 10 seconds
