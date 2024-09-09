@@ -34,19 +34,17 @@ textButton.MouseButton1Click:Connect(function()
     sphere.Anchored = true  -- Prevents sphere from falling
     sphere.CanCollide = false  -- Makes it non-collidable
 
-    -- Set sphere material to 'Forcefield' and color to 'Black'
-    sphere.Material = Enum.Material.ForceField
-    sphere.Color = Color3.fromRGB(0, 0, 0)  -- Set color to black
-
-    -- Parent the sphere to workspace
+    -- Set the sphere's Material and Color
+    sphere.Material = Enum.Material.Forcefield  -- Set Material to Forcefield
+    sphere.Color = Color3.new(0, 0, 0)  -- Set Color to black
     sphere.Parent = workspace
 
-    -- Expand the sphere for 10 seconds
+    -- Expand the sphere faster for 10 seconds
     local startTime = tick()
     while tick() - startTime < 10 do
-        sphere.Size = sphere.Size + Vector3.new(1, 1, 1)  -- Expand sphere
+        sphere.Size = sphere.Size + Vector3.new(2, 2, 2)  -- Faster expansion (increase by 2 each step)
         sphere.CFrame = rootPart.CFrame  -- Keep sphere at player's position
-        wait(0.015)  -- Adjust the wait for smoother expansion
+        wait(0.05)  -- Shorter wait for faster growth
     end
 
     -- Delete the sphere after 10 seconds
