@@ -1,3 +1,5 @@
+local TweenService = game:GetService("TweenService")
+
 -- Create a ScreenGui
 local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
@@ -39,13 +41,24 @@ textButton.MouseButton1Click:Connect(function()
     sphere.Color = Color3.new(0, 0, 0)  -- Set Color to black
     sphere.Parent = workspace
 
-    -- Expand the sphere faster for 10 seconds
-    local startTime = tick()
-    while tick() - startTime < 10 do
-        sphere.Size = sphere.Size + Vector3.new(2, 2, 2)  -- Faster expansion (increase by 2 each step)
-        sphere.CFrame = rootPart.CFrame  -- Keep sphere at player's position
-        wait(0.05)  -- Shorter wait for faster growth
-    end
+    -- Tween settings
+    local tweenInfo = TweenInfo.new(
+        10,  -- Duration (seconds)
+        Enum.EasingStyle.Linear,  -- Easing style
+        Enum.EasingDirection.InOut  -- Easing direction
+    )
+
+    -- Create the goal for the tween (expanded size)
+    local goal = {Size = Vector3.new(10, 10, 10)}
+
+    -- Create the tween
+    local tween = TweenService:Create(sphere, tweenInfo, goal)
+
+    -- Play the tween
+    tween:Play()
+
+    -- Wait for the tween to finish
+    tween.Completed:Wait()
 
     -- Delete the sphere after 10 seconds
     sphere:Destroy()
