@@ -1,0 +1,22 @@
+local ScreenGui = Instance.new("ScreenGui")  -- Create a new ScreenGui
+local TextButton = Instance.new("TextButton")  -- Create a new TextButton
+local Sound = Instance.new("Sound")  -- Create a Sound object
+
+-- Set properties for the ScreenGui
+ScreenGui.Name = "MyScreenGui"
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")  -- Attach it to the player's GUI
+
+-- Set properties for the TextButton
+TextButton.Size = UDim2.new(0, 200, 0, 50)  -- Width = 200px, Height = 50px
+TextButton.Position = UDim2.new(0.5, -100, 0.5, -25)  -- Center the button
+TextButton.Text = "Time Stop"  -- Set button text
+TextButton.Parent = ScreenGui  -- Add the TextButton to the ScreenGui
+
+-- Set properties for the Sound
+Sound.SoundId = "5129686200"  -- Replace with your audio ID
+Sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")  -- Attach it to the player's GUI
+
+-- Play the sound when the TextButton is clicked
+TextButton.MouseButton1Click:Connect(function()
+    Sound:Play()  -- Play the sound
+end)
