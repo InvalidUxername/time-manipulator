@@ -21,79 +21,94 @@ local sound = Instance.new("Sound")
 sound.SoundId = audioId
 sound.Parent = game.Workspace
 
+local isEffectActive = false
+local colorCorrection = nil
+local sphere = nil
+
 -- Function to handle button click
 local function onButtonClick()
-    -- Play the audio
-    sound:Play()
+    if not isEffectActive then
+        -- Start the effect
+        -- Play the audio
+        sound:Play()
 
-    -- Wait for 2 seconds
-    wait(2.15)
+        -- Wait for 2 seconds
+        wait(2.15)
 
-    -- Create and configure the sphere
-    local sphere = Instance.new("Part")
-    sphere.Shape = Enum.PartType.Ball
-    sphere.Size = Vector3.new(5, 5, 5)
-    sphere.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
-    sphere.Material = Enum.Material.ForceField
-    sphere.Anchored = true
-    sphere.CanCollide = false
-    sphere.BrickColor = BrickColor.new("Black")
-    sphere.Parent = game.Workspace
+        -- Create and configure the sphere
+        sphere = Instance.new("Part")
+        sphere.Shape = Enum.PartType.Ball
+        sphere.Size = Vector3.new(5, 5, 5)
+        sphere.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+        sphere.Material = Enum.Material.ForceField
+        sphere.Anchored = true
+        sphere.CanCollide = false
+        sphere.BrickColor = BrickColor.new("Black")
+        sphere.Parent = game.Workspace
 
-    -- Create and configure the ColorCorrectionEffect
-    local colorCorrection = Instance.new("ColorCorrectionEffect")
-    colorCorrection.Name = "WhiteOutEffect"
-    colorCorrection.Parent = Lighting
+        -- Create and configure the ColorCorrectionEffect
+        colorCorrection = Instance.new("ColorCorrectionEffect")
+        colorCorrection.Name = "WhiteOutEffect"
+        colorCorrection.Parent = Lighting
 
-    -- Tween the ColorCorrectionEffect properties to make everything white
-    local colorCorrectionTweenInfo = TweenInfo.new(
-        1.5, -- Duration of the tween (1.5 seconds)
-        Enum.EasingStyle.Linear, -- Easing style
-        Enum.EasingDirection.InOut -- Easing direction
-    )
+        -- Tween the ColorCorrectionEffect properties to make everything white
+        local colorCorrectionTweenInfo = TweenInfo.new(
+            1.5, -- Duration of the tween (1.5 seconds)
+            Enum.EasingStyle.Linear, -- Easing style
+            Enum.EasingDirection.InOut -- Easing direction
+        )
 
-    local colorCorrectionGoal = {
-        Saturation = -1, -- Reduce saturation to make colors less vibrant
-        Contrast = 1, -- Increase contrast
-        Brightness = 0.5 -- Adjust brightness to make it brighter
-    }
+        local colorCorrectionGoal = {
+            Saturation = -1, -- Reduce saturation to make colors less vibrant
+            Contrast = 1, -- Increase contrast
+            Brightness = 0.5 -- Adjust brightness to make it brighter
+        }
 
-    local colorCorrectionTween = TweenService:Create(colorCorrection, colorCorrectionTweenInfo, colorCorrectionGoal)
-    colorCorrectionTween:Play()
+        local colorCorrectionTween = TweenService:Create(colorCorrection, colorCorrectionTweenInfo, colorCorrectionGoal)
+        colorCorrectionTween:Play()
 
-    -- Create a tween for the sphere's expansion
-    local sphereTweenInfo = TweenInfo.new(
-        1.5, -- Duration of the tween (1.5 seconds)
-        Enum.EasingStyle.Linear, -- Easing style
-        Enum.EasingDirection.InOut -- Easing direction
-    )
+        -- Create a tween for the sphere's expansion
+        local sphereTweenInfo = TweenInfo.new(
+            1.5, -- Duration of the tween (1.5 seconds)
+            Enum.EasingStyle.Linear, -- Easing style
+            Enum.EasingDirection.InOut -- Easing direction
+        )
 
-    local sphereGoal = {Size = Vector3.new(500, 500, 500)} -- Target size of the sphere
+        local sphereGoal = {Size = Vector3.new(500, 500, 500)} -- Target size of the sphere
 
-    local sphereTween = TweenService:Create(sphere, sphereTweenInfo, sphereGoal)
-    sphereTween:Play()
+        local sphereTween = TweenService:Create(sphere, sphereTweenInfo, sphereGoal)
+        sphereTween:Play()
 
-    -- Anchor all players except the Time Stop user
-    local timeStopUser = game.Players.LocalPlayer
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= timeStopUser and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
-            humanoidRootPart.Anchored = true
-            -- Anchor limbs
-            for _, limb in pairs(player.Character:GetChildren()) do
-                if limb:IsA("Part") and limb.Name ~= "HumanoidRootPart" then
-                    limb.Anchored = true
+        -- Anchor all players except the Time Stop user
+        local timeStopUser = game.Players.LocalPlayer
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= timeStopUser and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+                humanoidRootPart.Anchored = true
+                -- Anchor limbs
+                for _, limb in pairs(player.Character:GetChildren()) do
+                    if limb:IsA("Part") and limb.Name ~= "HumanoidRootPart" then
+                        limb.Anchored = true
+                    end
                 end
             end
         end
-    end
 
-    -- Wait for the sphere tween to complete
-    sphereTween.Completed:Connect(function()
-        print("Sphere tween completed")
-        sphere:Destroy() -- Ensure sphere is destroyed
+        -- Wait for the sphere tween to complete
+        sphereTween.Completed:Connect(function()
+            sphere:Destroy() -- Ensure sphere is destroyed
+        end)
+        
+        -- Wait for the ColorCorrectionEffect tween to complete
+        colorCorrectionTween.Completed:Connect(function()
+            -- Optionally, you can remove the ColorCorrectionEffect here if needed
+            -- colorCorrection:Destroy() -- Uncomment if you want to remove it
+        end)
 
-        -- Unanchor all players (if needed) after the effect
+        isEffectActive = true
+    else
+        -- Stop the effect
+        -- Unanchor all players
         for _, player in pairs(Players:GetPlayers()) do
             if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
                 local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
@@ -106,14 +121,14 @@ local function onButtonClick()
                 end
             end
         end
-    end)
-    
-    -- Wait for the ColorCorrectionEffect tween to complete
-    colorCorrectionTween.Completed:Connect(function()
-        print("ColorCorrectionEffect tween completed")
-        -- Optionally, you can remove the ColorCorrectionEffect here if needed
-        -- colorCorrection:Destroy() -- Uncomment if you want to remove it
-    end)
+
+        -- Remove the ColorCorrectionEffect
+        if colorCorrection then
+            colorCorrection:Destroy()
+        end
+
+        isEffectActive = false
+    end
 end
 
 -- Connect the button click to the function
