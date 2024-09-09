@@ -1,3 +1,4 @@
+-- Services
 local TweenService = game:GetService("TweenService")
 
 -- Create a ScreenGui
@@ -16,46 +17,48 @@ local sound = Instance.new("Sound")
 sound.SoundId = "rbxassetid://5129686200"  -- Replace with the actual sound ID
 sound.Parent = game.Workspace
 
--- Play sound and release sphere when button is clicked
-textButton.MouseButton1Click:Connect(function()
-    sound:Play()  -- Play the sound when button is clicked
-    
-    -- Wait for 2 seconds before creating the sphere
+-- Function to create and expand the sphere
+local function createAndExpandSphere(player)
+    -- Wait 2 seconds before creating the sphere
     wait(2)
-    
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
     -- Create the sphere
     local sphere = Instance.new("Part")
-    sphere.Name = "ExpandingSphere"  -- Name it for easier identification
     sphere.Shape = Enum.PartType.Ball
-    sphere.Size = Vector3.new(5, 5, 5)  -- Initial size of the sphere
-    sphere.Position = humanoidRootPart.Position
-    sphere.Anchored = true  -- Make sure it's anchored so it doesn't fall
-    sphere.Material = Enum.Material.Forcefield
+    sphere.Material = Enum.Material.ForceField
     sphere.Color = Color3.fromRGB(0, 0, 0)  -- Black color
+    sphere.Size = Vector3.new(5, 5, 5)  -- Initial size
+    sphere.Position = player.Character.HumanoidRootPart.Position
+    sphere.Anchored = true
+    sphere.CanCollide = false
     sphere.Parent = workspace
 
-    -- Create a Tween for expanding the sphere
+    -- Tween information
     local tweenInfo = TweenInfo.new(
-        10,  -- Time to expand
-        Enum.EasingStyle.Linear,  -- Easing style
-        Enum.EasingDirection.InOut  -- Easing direction
+        10,  -- Time in seconds
+        Enum.EasingStyle.Linear,
+        Enum.EasingDirection.InOut
     )
-    local goal = {Size = Vector3.new(20, 20, 20)}  -- Final size of the sphere
-    local tween = TweenService:Create(sphere, tweenInfo, goal)
-    
-    -- Play the tween to expand the sphere
+
+    local tweenGoals = {
+        Size = Vector3.new(15, 15, 15)  -- Expanded size
+    }
+
+    local tween = TweenService:Create(sphere, tweenInfo, tweenGoals)
+
+    -- Play the tween
     tween:Play()
 
     -- Wait for the tween to complete
     tween.Completed:Wait()
 
-    -- Wait for an additional 5 seconds before deleting the sphere
-    wait(5)
-    
-    -- Remove the sphere
+    -- Wait an additional second before deleting the sphere
+    wait(1)
     sphere:Destroy()
+end
+
+-- Play sound and start the sphere expansion when button is clicked
+textButton.MouseButton1Click:Connect(function()
+    sound:Play()  -- Play the sound
+    createAndExpandSphere(game.Players.LocalPlayer)  -- Start sphere creation and expansion
 end)
