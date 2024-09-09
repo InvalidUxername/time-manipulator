@@ -1,5 +1,6 @@
--- Services
 local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
 
 -- Create a ScreenGui
 local screenGui = Instance.new("ScreenGui")
@@ -7,58 +8,113 @@ screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 -- Create a TextButton
 local textButton = Instance.new("TextButton")
-textButton.Size = UDim2.new(0, 200, 0, 50)  -- Button size
-textButton.Position = UDim2.new(0.5, -100, 0.5, -25)  -- Button position (centered)
-textButton.Text = "Click me!"
+textButton.Size = UDim2.new(0, 200, 0, 50) -- Size of the button
+textButton.Position = UDim2.new(0.5, -100, 0.5, -25) -- Centered position
+textButton.Text = "Click Me!" -- Button text
+textButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Button background color (red)
+textButton.TextColor3 = Color3.fromRGB(255, 255, 255) -- Text color (white)
 textButton.Parent = screenGui
 
--- Create a Sound object
+-- Load the audio asset (replace with your audio ID)
+local audioId = "rbxassetid://5129686200" -- Replace with your audio ID
 local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://12345678"  -- Replace with the actual sound ID
+sound.SoundId = audioId
 sound.Parent = game.Workspace
 
--- Function to create and expand the sphere
-local function createAndExpandSphere(player)
-    -- Wait 2 seconds before creating the sphere
-    wait(2)
+-- Function to handle button click
+local function onButtonClick()
+    -- Play the audio
+    sound:Play()
 
-    -- Create the sphere
+    -- Wait for 2 seconds
+    wait(2.15)
+
+    -- Create and configure the sphere
     local sphere = Instance.new("Part")
     sphere.Shape = Enum.PartType.Ball
+    sphere.Size = Vector3.new(5, 5, 5)
+    sphere.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
     sphere.Material = Enum.Material.ForceField
-    sphere.Color = Color3.fromRGB(0, 0, 0)  -- Black color
-    sphere.Size = Vector3.new(5, 5, 5)  -- Initial size
-    sphere.Position = player.Character.HumanoidRootPart.Position
     sphere.Anchored = true
     sphere.CanCollide = false
-    sphere.Parent = workspace
+    sphere.BrickColor = BrickColor.new("Black")
+    sphere.Parent = game.Workspace
 
-    -- Tween information
-    local tweenInfo = TweenInfo.new(
-        5,  -- Time in seconds for faster expansion
-        Enum.EasingStyle.Linear,
-        Enum.EasingDirection.InOut
+    -- Create and configure the ColorCorrectionEffect
+    local colorCorrection = Instance.new("ColorCorrectionEffect")
+    colorCorrection.Name = "WhiteOutEffect"
+    colorCorrection.Parent = Lighting
+
+    -- Tween the ColorCorrectionEffect properties to make everything white
+    local colorCorrectionTweenInfo = TweenInfo.new(
+        1.5, -- Duration of the tween (1.5 seconds)
+        Enum.EasingStyle.Linear, -- Easing style
+        Enum.EasingDirection.InOut -- Easing direction
     )
 
-    local tweenGoals = {
-        Size = Vector3.new(15, 15, 15)  -- Expanded size
+    local colorCorrectionGoal = {
+        Saturation = -1, -- Reduce saturation to make colors less vibrant
+        Contrast = 1, -- Increase contrast
+        Brightness = 0.5 -- Adjust brightness to make it brighter
     }
 
-    local tween = TweenService:Create(sphere, tweenInfo, tweenGoals)
+    local colorCorrectionTween = TweenService:Create(colorCorrection, colorCorrectionTweenInfo, colorCorrectionGoal)
+    colorCorrectionTween:Play()
 
-    -- Play the tween
-    tween:Play()
+    -- Create a tween for the sphere's expansion
+    local sphereTweenInfo = TweenInfo.new(
+        1.5, -- Duration of the tween (1.5 seconds)
+        Enum.EasingStyle.Linear, -- Easing style
+        Enum.EasingDirection.InOut -- Easing direction
+    )
 
-    -- Wait for the tween to complete
-    tween.Completed:Wait()
+    local sphereGoal = {Size = Vector3.new(500, 500, 500)} -- Target size of the sphere
 
-    -- Wait an additional second before deleting the sphere
-    wait(1)
-    sphere:Destroy()
+    local sphereTween = TweenService:Create(sphere, sphereTweenInfo, sphereGoal)
+    sphereTween:Play()
+
+    -- Anchor all players except the Time Stop user
+    local timeStopUser = game.Players.LocalPlayer
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= timeStopUser and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+            humanoidRootPart.Anchored = true
+            -- Anchor limbs
+            for _, limb in pairs(player.Character:GetChildren()) do
+                if limb:IsA("Part") and limb.Name ~= "HumanoidRootPart" then
+                    limb.Anchored = true
+                end
+            end
+        end
+    end
+
+    -- Wait for the sphere tween to complete
+    sphereTween.Completed:Connect(function()
+        print("Sphere tween completed")
+        sphere:Destroy() -- Ensure sphere is destroyed
+
+        -- Unanchor all players (if needed) after the effect
+        for _, player in pairs(Players:GetPlayers()) do
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+                humanoidRootPart.Anchored = false
+                -- Unanchor limbs
+                for _, limb in pairs(player.Character:GetChildren()) do
+                    if limb:IsA("Part") and limb.Name ~= "HumanoidRootPart" then
+                        limb.Anchored = false
+                    end
+                end
+            end
+        end
+    end)
+    
+    -- Wait for the ColorCorrectionEffect tween to complete
+    colorCorrectionTween.Completed:Connect(function()
+        print("ColorCorrectionEffect tween completed")
+        -- Optionally, you can remove the ColorCorrectionEffect here if needed
+        -- colorCorrection:Destroy() -- Uncomment if you want to remove it
+    end)
 end
 
--- Play sound and start the sphere expansion when button is clicked
-textButton.MouseButton1Click:Connect(function()
-    sound:Play()  -- Play the sound
-    createAndExpandSphere(game.Players.LocalPlayer)  -- Start sphere creation and expansion
-end)
+-- Connect the button click to the function
+textButton.MouseButton1Click:Connect(onButtonClick)
