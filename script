@@ -1,6 +1,7 @@
 local TweenService = game:GetService("TweenService")
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
 
 -- Create a ScreenGui
 local screenGui = Instance.new("ScreenGui")
@@ -25,6 +26,7 @@ sound.Parent = game.Workspace
 local isEffectActive = false
 local colorCorrection = nil
 local sphere = nil
+local originalGravity = Workspace.Gravity -- Store the original gravity value
 
 -- Function to handle button click
 local function onButtonClick()
@@ -80,6 +82,9 @@ local function onButtonClick()
         local sphereTween = TweenService:Create(sphere, sphereTweenInfo, sphereGoal)
         sphereTween:Play()
 
+        -- Apply low gravity
+        Workspace.Gravity = 50 -- Adjust gravity to a lower value for low gravity effect
+
         -- Anchor all players except the Time Stop user
         local timeStopUser = game.Players.LocalPlayer
         for _, player in pairs(Players:GetPlayers()) do
@@ -132,6 +137,9 @@ local function onButtonClick()
         if sphere then
             sphere:Destroy()
         end
+
+        -- Revert gravity to original value
+        Workspace.Gravity = originalGravity
 
         isEffectActive = false
     end
