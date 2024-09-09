@@ -13,6 +13,7 @@ textButton.Position = UDim2.new(0.5, -100, 0.5, -25) -- Centered position
 textButton.Text = "Click Me!" -- Button text
 textButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Button background color (red)
 textButton.TextColor3 = Color3.fromRGB(255, 255, 255) -- Text color (white)
+textButton.Draggable = true
 textButton.Parent = screenGui
 
 -- Load the audio asset (replace with your audio ID)
@@ -98,7 +99,7 @@ local function onButtonClick()
         sphereTween.Completed:Connect(function()
             sphere:Destroy() -- Ensure sphere is destroyed
         end)
-        
+
         -- Wait for the ColorCorrectionEffect tween to complete
         colorCorrectionTween.Completed:Connect(function()
             -- Optionally, you can remove the ColorCorrectionEffect here if needed
@@ -125,6 +126,11 @@ local function onButtonClick()
         -- Remove the ColorCorrectionEffect
         if colorCorrection then
             colorCorrection:Destroy()
+        end
+
+        -- Destroy the sphere if it exists
+        if sphere then
+            sphere:Destroy()
         end
 
         isEffectActive = false
