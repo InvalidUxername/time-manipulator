@@ -14,7 +14,41 @@ local sound = Instance.new("Sound")
 sound.SoundId = "rbxassetid://5129686200"  -- Replace with the actual sound ID
 sound.Parent = game.Workspace
 
--- Play sound when button is clicked
+-- Play sound and create sphere 2 seconds after clicking the button
 textButton.MouseButton1Click:Connect(function()
-    sound:Play()  -- Play the sound when button is clicked
+    sound:Play()  -- Play sound when button is clicked
+    
+    -- Delay the sphere creation by 2 seconds
+    wait(2)
+
+    -- Get the player's HumanoidRootPart
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local rootPart = character:WaitForChild("HumanoidRootPart")
+
+    -- Create a sphere (Part)
+    local sphere = Instance.new("Part")
+    sphere.Shape = Enum.PartType.Ball
+    sphere.Size = Vector3.new(1, 1, 1)  -- Initial size
+    sphere.CFrame = rootPart.CFrame  -- Position at the player's HumanoidRootPart
+    sphere.Anchored = true  -- Prevents sphere from falling
+    sphere.CanCollide = false  -- Makes it non-collidable
+
+    -- Set sphere material to 'Forcefield' and color to 'Black'
+    sphere.Material = Enum.Material.ForceField
+    sphere.Color = Color3.fromRGB(0, 0, 0)  -- Set color to black
+
+    -- Parent the sphere to workspace
+    sphere.Parent = workspace
+
+    -- Expand the sphere for 10 seconds
+    local startTime = tick()
+    while tick() - startTime < 10 do
+        sphere.Size = sphere.Size + Vector3.new(1, 1, 1)  -- Expand sphere
+        sphere.CFrame = rootPart.CFrame  -- Keep sphere at player's position
+        wait(0.1)  -- Adjust the wait for smoother expansion
+    end
+
+    -- Delete the sphere after 10 seconds
+    sphere:Destroy()
 end)
